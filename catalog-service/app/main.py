@@ -1,7 +1,9 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from .database import init_db, SessionLocal, get_db
 from .models import Content
+from .schemas import ContentCreate
 
 app = FastAPI(title="Catalog Service")
 
@@ -25,3 +27,15 @@ def get_content(content_id: str, db: Session = Depends(get_db)):
     if content is None:
         raise HTTPException(status_code=404, detail="Content not found")
     return content
+
+# /content POST endpoint
+@app.post("/content")
+def create_content(content: ContentCreate, db: Session = Depends(get_db)):
+    new_content = Content(id=content.id, title=content.title, duration_seconds=content.duration_seconds)
+    db.add(new_content)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Content with this id already exists")
+    return new_content
