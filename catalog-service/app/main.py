@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from .database import init_db, SessionLocal, get_db
 from .models import Content
-from .schemas import ContentCreate
+from .schemas import ContentCreate, ContentResponse
 
 app = FastAPI(title="Catalog Service")
 
@@ -21,7 +21,7 @@ def list_content(db: Session = Depends(get_db)):
     return db.query(Content).all()
 
 # /content/{id} (get 1 content) endpoint
-@app.get("/content/{content_id}")
+@app.get("/content/{content_id}", response_model = ContentResponse)
 def get_content(content_id: str, db: Session = Depends(get_db)):
     content = db.query(Content).filter(Content.id == content_id).first()
     if content is None:
