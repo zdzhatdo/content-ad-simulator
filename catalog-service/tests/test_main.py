@@ -25,6 +25,11 @@ def test_health_check():
 
 def test_create_content():
     response = client.post("/content", json={"id": "test_vid", "title": "test_title", "duration_seconds": 1800})
-    print(response.json())
     assert response.status_code == 200
     assert response.json() == {"id": "test_vid", "title": "test_title", "duration_seconds": 1800, "ad_slots": []}
+
+def test_create_ad_slot():
+    client.post("/content", json={"id": "test_vid", "title": "test_title", "duration_seconds": 1800})
+    response = client.post("/content/test_vid/ad_slot", json={"slot_id": "test_ad", "offset_seconds": 0})
+    assert response.status_code == 200
+    assert response.json() == {"slot_id": "test_ad", "offset_seconds": 0}

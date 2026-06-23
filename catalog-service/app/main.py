@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from .database import init_db, SessionLocal, get_db
 from .models import Content, AdSlot
-from .schemas import ContentCreate, ContentResponse, AdSlotCreate
+from .schemas import ContentCreate, ContentResponse, AdSlotCreate, AdSlotResponse
 
 app = FastAPI(title="Catalog Service")
 
@@ -41,7 +41,7 @@ def create_content(content: ContentCreate, db: Session = Depends(get_db)):
     return new_content
 
 # /content/{id}/ad_slot (post the ad slot) endpoint
-@app.post("/content/{content_id}/ad_slot")
+@app.post("/content/{content_id}/ad_slot", response_model = AdSlotResponse)
 def create_ad_slot(ad_slot: AdSlotCreate, content_id: str, db: Session = Depends(get_db)):
     content = db.query(Content).filter(Content.id == content_id).first()
     if content is None:
