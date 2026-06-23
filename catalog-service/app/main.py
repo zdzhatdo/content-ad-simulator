@@ -29,7 +29,7 @@ def get_content(content_id: str, db: Session = Depends(get_db)):
     return content
 
 # /content POST endpoint
-@app.post("/content")
+@app.post("/content", response_model = ContentResponse)
 def create_content(content: ContentCreate, db: Session = Depends(get_db)):
     new_content = Content(id=content.id, title=content.title, duration_seconds=content.duration_seconds)
     db.add(new_content)
