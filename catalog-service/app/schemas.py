@@ -5,6 +5,10 @@ class ContentCreate(BaseModel):
     title: str
     duration_seconds: int
 
+class AdSlotCreate(BaseModel):
+    slot_id: str
+    offset_seconds: int
+
 class AdSlotResponse(BaseModel):
     slot_id: str
     offset_seconds: int
