@@ -33,3 +33,16 @@ def test_create_ad_slot():
     response = client.post("/content/test_vid/ad_slot", json={"slot_id": "test_ad", "offset_seconds": 0})
     assert response.status_code == 200
     assert response.json() == {"slot_id": "test_ad", "offset_seconds": 0}
+
+# 404 get content
+def test_get_content_not_found():
+    response = client.get("/content/test_vid")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Content not found"}
+
+# 409 create content
+def test_create_content_already_exists():
+    client.post("/content", json={"id": "test_vid", "title": "test_title", "duration_seconds": 1800})
+    response = client.post("/content", json={"id": "test_vid", "title": "new_title", "duration_seconds": 1200})
+    assert response.status_code == 409
+    assert response.json() == {"detail": "Content with this id already exists"}
