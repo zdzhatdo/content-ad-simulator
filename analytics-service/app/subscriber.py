@@ -4,6 +4,13 @@ from .redis_client import r, REDIS_URL
 
 def process_event(event_data: dict):
     """Process a single event and update Redis counters."""
+    # idempotency check
+    event_id = event_data.get("event_id")
+    if r.sismember("processed_events", event_id):
+        return
+    r.sadd("processed_events", event_id)
+        
+
     data = event_data.get("data", {})
     content_id = data.get("content_id")
     event_type = event_data.get("event_type")
