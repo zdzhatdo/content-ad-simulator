@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from dotenv import load_dotenv
+from .event_publisher import publish_event
 import os
 import httpx
 
@@ -41,5 +42,11 @@ def watch_content(content_id: str, slot_id: str, viewer_region: str): # viewer r
             ad = None
     except httpx.RequestError:
         ad = None
+
+    # publish to redis for analytics
+    try:
+        publish_event(content_id, slot_id, ad)
+    except Exception: # analytics is non-essential, log a silent failure (redis.RedisError, redis.ConnectionError, or ValueError/TypeError from json.dumps(event))
+        pass
 
     return {"content": content_data, "ad": ad}
